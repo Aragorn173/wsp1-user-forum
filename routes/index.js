@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 
 
 const mysql = require('mysql2');
+const session = require('express-session');
 
 const pool = mysql.createPool({
     connectionLimit: 10,
@@ -22,11 +23,12 @@ const promisePool = pool.promise();
 
 
 router.get('/', async function (req, res, next) {
-    const [rows] = await promisePool.query("SELECT * FROM al04forum JOIN al04users ON al04forum.authorId = al04users.id ORDER BY createdAt DESC");
+    const [rows] = await promisePool.query("SELECT al04forum.*, al04users.name FROM al04forum JOIN al04users WHERE al04forum.authorId = al04users.id ORDER BY createdAt DESC");
     res.render('index.njk', {
         rows: rows,
         title: 'Forum',
     });
+    console.log(rows);
 });
 
 
@@ -49,25 +51,30 @@ router.post('/new', async function (req, res, next) {
 });
 
 router.get('/new', async function (req, res, next) {
-    const [users] = await promisePool.query("SELECT * FROM al04users");
+    if (req.session.loggedin === undefined) {
+        return res.status(401).send('Login to create a post')
+    } else {
+
+    const [users] = await promisePool.query("SELECT * FROM al04users WHERE id = ?", [req.session.userid]);
     res.render('new.njk', {
         title: 'Nytt inlägg',
         users,
     });
-});
+}});
 
 router.get('/post/:id', async function (req, res) {
+    console.log(req.params);
     const [rows] = await promisePool.query(
         `SELECT al04forum.*, al04users.name AS username
         FROM al04forum
-        JOIN al04users ON al04forum.id = al04users.id
-        WHERE al04forum.id = ?;`,
+        JOIN al04users ON al04forum.authorId = al04users.id
+        WHERE al04forum.id = ?;`, 
         [req.params.id]
     );
 
     res.render('post.njk', {
         post: rows[0],
-        title: 'Forum',
+        title: 'Post',
     });
 });
 
@@ -117,6 +124,7 @@ router.post('/login', async function (req, res, next) {
         if (result === true) {
             req.session.loggedin = true;
             req.session.userid = users[0].id;
+            req.session.username = users[0].name;
             return res.redirect('/profile');
         } else {
             return res.json('Invalid username or password');

@@ -2,3 +2,18 @@
 Idag har jag lagt ihop forumet och inloggningen så det fungerar.
 
 nästa nång ska jag göra att man kan gå in på varje enskild post i forumet och göra postsen snyggare.
+
+
+
+
+#### TIS 2023-03-21
+Förra lektionen satte jag ihop forumet och login så man kan logga in på sidan och se sin profil.
+
+Idag ska jag göra så att man kan se alla sina posts på sin profil, man ska bara kunna skriva ett inlägg om man är inloggad, kunna gå in på varje inlägg och snygga till forumet.
+
+Jag har inget som hindrar mig just nu men jag kanske stöter på problem medans jag försöker fixa dessa saker.
+
+
+Idag har jag gjort så att man kan bara skriva ett inlägg om man är inloggad, man kan se alla posts man har skapat på sin profil, man kan gå in på alla inlägg.
+
+Nästa gång ska jag fixa färgerna på texten när man går in på en post och så att författern syns. och fortsätta snygga till.

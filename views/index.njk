@@ -2,10 +2,9 @@
 {% block content %}
 <ul>
     {% for row in rows %}
-    <li>
+    <li class="cardpadding">
         <div class="card" style="width: 100%;">
-            <img src="img/pfp.jpg" class="card-img-top" alt="pfp">
-            <p>{{ row.name }}</p>
+            <h5>{{ row.name }}</h5>
 
             <div class="card-body">
               <h5 class="card-title"> {{ row.title }}</h5>
