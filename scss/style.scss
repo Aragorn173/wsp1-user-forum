@@ -45,7 +45,11 @@ main{
     padding-bottom: 4rem;
 }
 
-
+:root {
+    --mo-secondary-color: #109847;
+    --mo-link-color: #109847;
+    --mo-nav-tabs-link-hover-border-color: #109847;
+}
 
 footer {
     padding-bottom: 0;
@@ -61,7 +65,6 @@ li {
 ul {
     list-style: none;
 }
-
 
 .text_color {
     color: black;

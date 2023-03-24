@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+var validator = require('validator');
 
 
 
@@ -22,18 +23,22 @@ const promisePool = pool.promise();
 
 
 
+
+
+
 router.get('/', async function (req, res, next) {
     const [rows] = await promisePool.query("SELECT al04forum.*, al04users.name FROM al04forum JOIN al04users WHERE al04forum.authorId = al04users.id ORDER BY createdAt DESC");
     res.render('index.njk', {
         rows: rows,
         title: 'Forum',
     });
-    console.log(rows);
 });
 
 
 router.post('/new', async function (req, res, next) {
     const { author, title, content } = req.body;
+    const errors = [];
+
 
     // Skapa en ny författare om den inte finns men du behöver kontrollera om användare finns!
     let [user] = await promisePool.query('SELECT * FROM al04users WHERE id = ?', [author]);
@@ -42,11 +47,32 @@ router.post('/new', async function (req, res, next) {
     }
 
     // user.insertId bör innehålla det nya ID:t för författaren
-
     const userId = user.insertId || user[0].id;
+    // validera title och body
+    if (!title) errors.push('Title is required');
+    if (!content) errors.push('content is required');
+    if (title && title.length <= 3)
+        errors.push('Title must be at least 3 characters');
+    if (content && content.length <= 10)
+        errors.push('Content must be at least 10 characters');
+
+    if (errors.length > 0) {
+        return res.json([errors]);
+    }
+    if (errors.length === 0) {
+        // sanitize title och body, tvätta datan
+        const sanitize = (str) => {
+            let temp = str.trim();
+            temp = validator.stripLow(temp);
+            temp = validator.escape(temp);
+            return temp;
+        };
+        if (title) sanitizedTitle = sanitize(title);
+        if (content) sanitizedContent = sanitize(content);
+    }
 
     // kör frågan för att skapa ett nytt inlägg
-    const [rows] = await promisePool.query('INSERT INTO al04forum (authorid, title, content) VALUES (?, ?, ?)', [userId, title, content]);
+    const [rows] = await promisePool.query('INSERT INTO al04forum (authorid, title, content) VALUES (?, ?, ?)', [userId, sanitizedTitle, sanitizedContent]);
     res.redirect('/'); // den här raden kan vara bra att kommentera ut för felsökning, du kan då använda tex. res.json({rows}) för att se vad som skickas tillbaka från databasen
 });
 
@@ -55,19 +81,20 @@ router.get('/new', async function (req, res, next) {
         return res.status(401).send('Login to create a post')
     } else {
 
-    const [users] = await promisePool.query("SELECT * FROM al04users WHERE id = ?", [req.session.userid]);
-    res.render('new.njk', {
-        title: 'Nytt inlägg',
-        users,
-    });
-}});
+        const [users] = await promisePool.query("SELECT * FROM al04users WHERE id = ?", [req.session.userid]);
+        res.render('new.njk', {
+            title: 'Nytt inlägg',
+            users,
+        });
+    }
+});
 
 router.get('/post/:id', async function (req, res) {
     const [rows] = await promisePool.query(
         `SELECT al04forum.*, al04users.name AS username
         FROM al04forum
         JOIN al04users ON al04forum.authorId = al04users.id
-        WHERE al04forum.id = ?;`, 
+        WHERE al04forum.id = ?;`,
         [req.params.id]
     );
 
@@ -102,7 +129,7 @@ router.post('/login', async function (req, res, next) {
     }
     const { username, password } = req.body;
     const errors = [];
-    
+
     if (username === '') {
         //console.log('Username is Required');
         errors.push('Username is Required');
@@ -118,20 +145,20 @@ router.post('/login', async function (req, res, next) {
     }
 
     const [users] = await promisePool.query('SELECT * FROM al04users WHERE name = ?', [username],);
-    if(users.length > 0) {
-    bcrypt.compare(password, users[0].password, function (err, result) {
-        if (result === true) {
-            req.session.loggedin = true;
-            req.session.userid = users[0].id;
-            req.session.username = users[0].name;
-            return res.redirect('/profile');
-        } else {
-            return res.json('Invalid username or password');
-        }
-    });
-} else {
-    return res.redirect("/login");
-}
+    if (users.length > 0) {
+        bcrypt.compare(password, users[0].password, function (err, result) {
+            if (result === true) {
+                req.session.loggedin = true;
+                req.session.userid = users[0].id;
+                req.session.username = users[0].name;
+                return res.redirect('/profile');
+            } else {
+                return res.json('Invalid username or password');
+            }
+        });
+    } else {
+        return res.redirect("/login");
+    }
 });
 
 router.get('/dashboard', function (req, res, next) {
@@ -143,16 +170,17 @@ router.get('/dashboard', function (req, res, next) {
 router.get('/profile', async function (req, res, next) {
 
     if (req.session.loggedin === undefined) {
-        
+
         return res.status(401).send('Access Denied');
     } else {
         const [rows] = await promisePool.query("SELECT * FROM al04forum WHERE authorId = ? ORDER BY createdAt DESC", [req.session.userid]);
         const [username] = await promisePool.query('SELECT * FROM al04users WHERE id = ?', [req.session.userid],);
-    res.render('profile.njk', {
-        title: 'Profile',
-        username: username[0].name,
-        rows: rows,
-    });}
+        res.render('profile.njk', {
+            title: 'Profile',
+            username: username[0].name,
+            rows: rows,
+        });
+    }
 });
 
 router.get('/crypt/:password', function (req, res, next) {
@@ -162,10 +190,10 @@ router.get('/crypt/:password', function (req, res, next) {
     });
 });
 
-router.post('/register', async function (req, res, next){
+router.post('/register', async function (req, res, next) {
     const { username, password, passwordConfirmation } = req.body;
     const errors = [];
-    
+
     if (username === '') {
         errors.push('Username is Required');
     } else {
@@ -174,11 +202,14 @@ router.post('/register', async function (req, res, next){
     if (password === '') {
         errors.push('Password is Required');
     }
+    if (password.length <= 8) {
+        errors.push('Password must minimum be 8 characters');
+    }
     if (password !== passwordConfirmation) {
         errors.push('Passwords do not match');
     }
-    const [userCheck] = await promisePool.query('SELECT name FROM al04users WHERE name = ?',[username],);
-    if (userCheck.length > 0){
+    const [userCheck] = await promisePool.query('SELECT name FROM al04users WHERE name = ?', [username],);
+    if (userCheck.length > 0) {
         errors.push('Username is already taken');
     }
     if (errors.length > 0) {
@@ -188,45 +219,45 @@ router.post('/register', async function (req, res, next){
             const [newUser] = await promisePool.query('INSERT INTO al04users (name, password) VALUES (?, ?)', [username, hash])
             return res.redirect('/login');
         });
-        
+
 
     }
 });
 
-router.get('/register', async function (req, res, next){
+router.get('/register', async function (req, res, next) {
     res.render('register.njk', {
         title: 'Register ALC',
     });
 });
 
-router.get('/logout', function (req, res, next){
+router.get('/logout', function (req, res, next) {
     req.session.loggedin = undefined;
     return res.redirect('/login')
-    
+
 });
 
-router.post('/logout', async function (req, res, next){
+router.post('/logout', async function (req, res, next) {
     if (req.session.loggedin === undefined) {
-        
+
         return res.status(401).send('Access Denied');
     }
     else {
-        req.session.loggedin=undefined;
+        req.session.loggedin = undefined;
         return res.redirect('/')
     }
 });
-router.get('/kaka', function(req, res, next) {
+router.get('/kaka', function (req, res, next) {
     if (req.session.views) {
-      req.session.views++
-      res.setHeader('Content-Type', 'text/html')
-      res.write('<p>views: ' + req.session.views + '</p>')
-      res.write('<p>expires in: NEVER(Probably(maybe))</p>')
-      res.end()
+        req.session.views++
+        res.setHeader('Content-Type', 'text/html')
+        res.write('<p>views: ' + req.session.views + '</p>')
+        res.write('<p>expires in: NEVER(Probably(maybe))</p>')
+        res.end()
     } else {
-      req.session.views = 1
-      res.end('welcome to the session demo. refresh!')
+        req.session.views = 1
+        res.end('welcome to the session demo. refresh!')
     }
-  })
+})
 
 
 
