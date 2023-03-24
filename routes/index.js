@@ -63,7 +63,6 @@ router.get('/new', async function (req, res, next) {
 }});
 
 router.get('/post/:id', async function (req, res) {
-    console.log(req.params);
     const [rows] = await promisePool.query(
         `SELECT al04forum.*, al04users.name AS username
         FROM al04forum
