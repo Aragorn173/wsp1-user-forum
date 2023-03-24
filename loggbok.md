@@ -28,3 +28,11 @@ Att man kan se författaren när man går in på en post.
 Validera, sätta krav vid registration samt vid skapadet av en post.
 
 Inget som hindrar mig just nu. (Jag är ostoppbar)
+
+
+
+Idag har jag fixat färger och namn på post.
+Jag har lagt till validering på title och content och tvätta den data med validator.stripLow och validator.escape.
+
+Nästa lektion ska jag lägga till validering på användarnamn och lösenord när konto skapas.
+göra så man kan inte logga in eller skapa ett nytt konto om man är inloggad.

@@ -196,7 +196,6 @@ router.post('/register', async function (req, res, next) {
 
     if (username === '') {
         errors.push('Username is Required');
-    } else {
     }
 
     if (password === '') {
@@ -205,6 +204,7 @@ router.post('/register', async function (req, res, next) {
     if (password.length <= 8) {
         errors.push('Password must minimum be 8 characters');
     }
+
     if (password !== passwordConfirmation) {
         errors.push('Passwords do not match');
     }
