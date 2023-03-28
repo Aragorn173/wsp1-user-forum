@@ -110,6 +110,9 @@ router.get('/post/:id', async function (req, res) {
 
 
 router.get('/login', function (req, res, next) {
+    if (req.session.loggedin === true) {
+        return res.redirect('/profile');
+    }
     res.render('login.njk', {
         title: 'Login ALC',
     });
@@ -198,12 +201,14 @@ router.post('/register', async function (req, res, next) {
         errors.push('Username is Required');
     }
 
+
     if (password === '') {
         errors.push('Password is Required');
     }
     if (password.length <= 8) {
         errors.push('Password must minimum be 8 characters');
     }
+
 
     if (password !== passwordConfirmation) {
         errors.push('Passwords do not match');
@@ -225,6 +230,9 @@ router.post('/register', async function (req, res, next) {
 });
 
 router.get('/register', async function (req, res, next) {
+    if (req.session.loggedin === true) {
+        return res.json('Logout to create an account');
+    }
     res.render('register.njk', {
         title: 'Register ALC',
     });

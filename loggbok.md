@@ -36,3 +36,12 @@ Jag har lagt till validering på title och content och tvätta den data med vali
 
 Nästa lektion ska jag lägga till validering på användarnamn och lösenord när konto skapas.
 göra så man kan inte logga in eller skapa ett nytt konto om man är inloggad.
+
+
+#### TIS 2023-03-28
+Förra lektionen gjorde jag så att man kan gå in på varje post och så måste man skriva en titel och innehåll för att kunna skriva ett inlägg.
+
+Den här lektionen ska jag göra så att man inte kan logga in om man redan är inloggad.
+Validering på användarnamn och lösenord när man skapar ett konto.
+
+jag har inga hinder just nu.
