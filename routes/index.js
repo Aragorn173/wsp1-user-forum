@@ -31,6 +31,7 @@ router.get('/', async function (req, res, next) {
     res.render('index.njk', {
         rows: rows,
         title: 'Forum',
+        loggedin: req.session.loggedin
     });
 });
 
@@ -85,6 +86,7 @@ router.get('/new', async function (req, res, next) {
         res.render('new.njk', {
             title: 'Nytt inlägg',
             users,
+            loggedin: req.session.loggedin
         });
     }
 });
@@ -101,6 +103,7 @@ router.get('/post/:id', async function (req, res) {
     res.render('post.njk', {
         post: rows[0],
         title: 'Post',
+        loggedin: req.session.loggedin
     });
 });
 
@@ -115,6 +118,7 @@ router.get('/login', function (req, res, next) {
     }
     res.render('login.njk', {
         title: 'Login ALC',
+        loggedin: req.session.loggedin
     });
 });
 
@@ -167,6 +171,7 @@ router.post('/login', async function (req, res, next) {
 router.get('/dashboard', function (req, res, next) {
     res.render('dashboard.njk', {
         title: 'Dashboard',
+        loggedin: req.session.loggedin
     });
 });
 
@@ -182,6 +187,7 @@ router.get('/profile', async function (req, res, next) {
             title: 'Profile',
             username: username[0].name,
             rows: rows,
+            loggedin: req.session.loggedin
         });
     }
 });
@@ -235,6 +241,7 @@ router.get('/register', async function (req, res, next) {
     }
     res.render('register.njk', {
         title: 'Register ALC',
+        loggedin: req.session.loggedin
     });
 });
 

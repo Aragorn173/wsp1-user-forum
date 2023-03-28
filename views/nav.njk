@@ -15,10 +15,18 @@
           <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
         </form>
 
+
+      
+        {% if loggedin === true %}
         <div class="text-end">
-          <a href="/login"> <button type="button"  class="btn btn-outline-light me-2">Login</button></a>
-          <a href="/register"><button type="button" class="btn btn-warning">Sign-up</button></a>
+          <a href="/profile"><button type="button" class="btn btn-outline-light me-2">Profile</button></a>
+          <a href="/logout"><button type="button" class="btn btn-warning">Logout</button></a>
         </div>
+        {% else %}
+                <div class="text-end">
+          <a href="/login"><button type="button" class="btn btn-outline-light me-2">Login</button></a>
+          <a href="/register"><button type="button" class="btn btn-warning">Sign-up</button></a>
+        {% endif %}
       </div>
     </div>
   </header>
