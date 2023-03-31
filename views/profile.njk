@@ -10,8 +10,8 @@
         <div class="card" style="width: 100%;">
             <h5>{{ row.name }}</h5>
             <div class="card-body">
-              <h5 class="card-title"> {{ row.title }}</h5>
-              <p class="card-text"> {{ row.content }}</p>
+              <h5 class="card-title"> {{ row.title |safe}}</h5>
+              <p class="card-text"> {{ row.content |safe}}</p>
               <a href="/post/{{ row.id }}" class="btn btn-primary">Visit post</a>
             </div>
             <p>{{ row.createdAt }}</p>

@@ -3,6 +3,11 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 var validator = require('validator');
 
+var filter = require('bad-words');
+var filter = new filter(); 
+filter.addWords('kukhuvud');
+
+
 
 
 const mysql = require('mysql2');
@@ -71,8 +76,8 @@ router.post('/new', async function (req, res, next) {
             temp = validator.escape(temp);
             return temp;
         };
-        if (title) sanitizedTitle = sanitize(title);
-        if (content) sanitizedContent = sanitize(content);
+        if (title) sanitizedTitle = filter.clean(sanitize(title));
+        if (content) sanitizedContent = filter.clean(sanitize(content));
     }
 
     // kör frågan för att skapa ett nytt inlägg
