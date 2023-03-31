@@ -117,7 +117,7 @@ router.get('/login', function (req, res, next) {
         return res.redirect('/profile');
     }
     res.render('login.njk', {
-        title: 'Login ALC',
+        title: 'Login',
         loggedin: req.session.loggedin
     });
 });
@@ -168,12 +168,6 @@ router.post('/login', async function (req, res, next) {
     }
 });
 
-router.get('/dashboard', function (req, res, next) {
-    res.render('dashboard.njk', {
-        title: 'Dashboard',
-        loggedin: req.session.loggedin
-    });
-});
 
 router.get('/profile', async function (req, res, next) {
 
@@ -207,6 +201,9 @@ router.post('/register', async function (req, res, next) {
         errors.push('Username is Required');
     }
 
+    if (!validator.isAlphanumeric(username, 'en-US')) {
+        errors.push('Username can only contain letters and numbers');
+    }
 
     if (password === '') {
         errors.push('Password is Required');
@@ -214,7 +211,6 @@ router.post('/register', async function (req, res, next) {
     if (password.length <= 8) {
         errors.push('Password must minimum be 8 characters');
     }
-
 
     if (password !== passwordConfirmation) {
         errors.push('Passwords do not match');
@@ -240,7 +236,7 @@ router.get('/register', async function (req, res, next) {
         return res.json('Logout to create an account');
     }
     res.render('register.njk', {
-        title: 'Register ALC',
+        title: 'Register',
         loggedin: req.session.loggedin
     });
 });
