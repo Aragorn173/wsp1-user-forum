@@ -1,0 +1,12 @@
+ lines (10 sloc)  162 Bytes
+
+{% extends "layout.njk" %}
+{% block content %}
+<ul>
+  {% for row in rows %}
+  <li>
+<p class="white">{{ row }}</p>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

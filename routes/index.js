@@ -58,7 +58,9 @@ router.post('/new', async function (req, res, next) {
         errors.push('Content must be at least 10 characters');
 
     if (errors.length > 0) {
-        return res.json([errors]);
+        return res.render('errors.njk', {
+            rows: errors,
+        });
     }
     if (errors.length === 0) {
         // sanitize title och body, tvätta datan
@@ -148,7 +150,9 @@ router.post('/login', async function (req, res, next) {
         errors.push('Password is Required');
     }
     if (errors.length > 0) {
-        return res.json([errors]);
+        return res.render('errors.njk', {
+            rows: errors,
+        });
     }
 
     const [users] = await promisePool.query('SELECT * FROM al04users WHERE name = ?', [username],);
@@ -220,7 +224,9 @@ router.post('/register', async function (req, res, next) {
         errors.push('Username is already taken');
     }
     if (errors.length > 0) {
-        return res.json([errors]);
+        return res.render('errors.njk', {
+            rows: errors,
+        });
     } else {
         bcrypt.hash(password, 10, async function (err, hash) {
             const [newUser] = await promisePool.query('INSERT INTO al04users (name, password) VALUES (?, ?)', [username, hash])
