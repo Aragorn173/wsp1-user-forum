@@ -45,3 +45,11 @@ Den här lektionen ska jag göra så att man inte kan logga in om man redan är 
 Validering på användarnamn och lösenord när man skapar ett konto.
 
 jag har inga hinder just nu.
+
+
+#### FRE 2023-03-31
+Förra lektionen Fixade jag så att man inte kan logga in eller skapa ett nytt konto om man redan är inloggad.
+
+Dem här lektionen ska jag validera användarnamn för att försäkra sidan från sql injections och xss attacker.
+
+jag vet inte riktigt hur jag ska använda funktionerna i validator paketet men kanske kan lista ut det genom att läsa vad som står på sidan.
