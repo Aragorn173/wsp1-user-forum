@@ -60,6 +60,7 @@ router.post('/new', async function (req, res, next) {
     if (errors.length > 0) {
         return res.render('errors.njk', {
             rows: errors,
+            loggedin: req.session.loggedin
         });
     }
     if (errors.length === 0) {
@@ -88,7 +89,7 @@ router.get('/new', async function (req, res, next) {
         res.render('new.njk', {
             title: 'Nytt inlägg',
             users,
-            loggedin: req.session.loggedin
+            loggedin: req.session.loggedin 
         });
     }
 });
@@ -152,6 +153,7 @@ router.post('/login', async function (req, res, next) {
     if (errors.length > 0) {
         return res.render('errors.njk', {
             rows: errors,
+            loggedin: req.session.loggedin
         });
     }
 
@@ -226,6 +228,7 @@ router.post('/register', async function (req, res, next) {
     if (errors.length > 0) {
         return res.render('errors.njk', {
             rows: errors,
+            loggedin: req.session.loggedin
         });
     } else {
         bcrypt.hash(password, 10, async function (err, hash) {
